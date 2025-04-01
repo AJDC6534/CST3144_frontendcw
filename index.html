@@ -26,8 +26,18 @@
                 </div>
                 <div v-else-if="!isHomePage && showProduct" class="flex flex-col py-5 mt-5">
                     <div class="mb-4 items-start ml-5">
+                        <div>
                         <label for="search" class="mr-2">Search:</label>
-                        <input v-model="searchQuery" id="search" type="text" placeholder="Search for activities..." class="border p-2 rounded-md">
+                        <input v-model="searchQuery" @input="debounceSearch" id="search" type="text" placeholder="Search for activities..." class="border p-2 rounded-md">
+                        <ul v-if="products.length">
+                            <li v-for="activity in activities" :key="activity._id">
+                              {{ product.title }} - {{ product.location }}
+                            </li>
+                          </ul>
+                          
+                          <p v-else>No activities found.</p>
+                        </div>
+                        </div>
                         <label for="sort-by" class="mr-2">Sort By:</label>
                         <select v-model="sortCriteria" id="sort-by" class="border p-2 rounded-md">
                             <option value="title-asc">Title (A-Z)</option>
@@ -41,7 +51,7 @@
                         </select>
                     </div>
                     <div class="flex flex-wrap justify-center gap-6">
-                        <div v-for="product in Products" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div v-for="product in products" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
                             <h2 class="text-2xl font-semibold text-gray-800 mb-3" v-text="product.title" ></h2>
                             <figure class="text-center mb-4">
                                 <img class="max-w-full h-auto rounded-lg" v-bind:src="product.image" alt="Product Image" width="100">
@@ -130,7 +140,7 @@
                     async fetchProducts() {
                         try {
                             const response = await fetch(
-                                "https://cst3144-backendcw.onrender.com/collection/products"
+                                "https://cst3144backendcw.onrender.com/collection/products"
                             ); // Make sure this URL is correct
                             if (!response.ok) {
                                 throw new Error("Failed to fetch products");
@@ -196,16 +206,21 @@
                                 alert("Please fill out all required fields.");
                                 return;
                             }
-                    fetch('https://cst3144-backendcw.onrender.com/collection/customer', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            firstName: this.order.firstName,
-                            lastName: this.order.lastName,
-                            contact: this.order.contact,
-                            cart: this.cart
-                        })
-                    })
+                            fetch('https://cst3144backendcw.onrender.com/collection/customer', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ 
+                                    firstName: this.order.firstName,
+                                    lastName: this.order.lastName,
+                                    contact: this.order.contact,
+                                    cart: this.cart.map(item => ({
+                                        id: item.id,
+                                        title: item.title,
+                                        price: item.price,
+                                        location: item.location
+                                    }))
+                                })
+                            })
                     .then(response => response.json())
                     .then(data => {
                         alert('Order submitted successfully!');
@@ -225,9 +240,6 @@
                         }
                         return count;
                     },
-                    getImageUrl(imagePath) {
-                        return imagePath.replace('C:/Users/Student/Documents/After school Activities/frontend/images/, /images');
-                    },
                     removeFromCart(index) {
                         const item = this.cart[index];
                         this.cart.splice(index, 1);
@@ -239,6 +251,22 @@
                         this.showProduct = true;
                         }
                     },
+                    debounceSearch() {
+                        clearTimeout(this.debounceTimer);
+                        this.debounceTimer = setTimeout(this.searchActivities, 300); // Delay of 300ms
+                        },
+                        searchActivities() {
+                        if (!this.searchQuery.trim()) {
+                            this.activities = []; // Clear results if query is empty
+                            return;
+                        }
+                        fetch(`http://localhost:3000/collection/activities/search?q=${encodeURIComponent(this.searchQuery)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                            this.activities = data;
+                            })
+                            .catch(error => console.error("Error fetching search results:", error));
+                    }
                 },
                 computed: {
                     cartItemCount() {
@@ -273,8 +301,8 @@
                         
                     },
                     mounted() {
-    this.fetchProducts(); // Call when the component loads
-}
+                        this.fetchProducts(); // Call when the component loads
+                    }
                 });
         </script>
     </body>
