@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>After School Activities</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+        <script src="product.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
+                <a href="#" @click.prevent="goToHomePage" class="text-3xl font-semibold text-white" v-text="sitename"></a>
+                <button v-if="!isHomePage" v-on:click="showCheckout" class="bg-red-500 text-white py-1 px-2 rounded-lg flex items-center hover:bg-gray-600 transition duration-300">
+                    <span class="mr-2"> {{ cartItemCount }} </span>
+                    <span class="fas fa-cart-plus">Checkout</span>
+                </button>                
+            </header>
+            <main>
+                <div v-if="isHomePage" class="flex flex-col items-center py-5 mt-5 bg-gray-50">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-5">Welcome to MDX AfterSchool Activities</h1>
+                    <p class="text-lg text-gray-600 mb-5">Fueling Fun, Fostering Growth: After-School Adventures Await!</p>
+                    <button @click="goToProductsPage" class="px-6 py-3 bg-red-500 text-white rounded-lg text-lg hover:bg-gray-600 transition duration-300">
+                        Start Browsing
+                    </button>
+                </div>
+                <div v-else-if="!isHomePage && showProduct" class="flex flex-col py-5 mt-5">
+                    <div class="mb-4 items-start ml-5">
+                        <label for="search" class="mr-2">Search:</label>
+                        <input v-model="searchQuery" id="search" type="text" placeholder="Search for activities..." class="border p-2 rounded-md">
+                        <label for="sort-by" class="mr-2">Sort By:</label>
+                        <select v-model="sortCriteria" id="sort-by" class="border p-2 rounded-md">
+                            <option value="title-asc">Title (A-Z)</option>
+                            <option value="title-desc">Title (Z-A)</option>
+                            <option value="location-asc">Location (A-Z)</option>
+                            <option value="location-desc">Location (Z-A)</option>
+                            <option value="price-asc">Price (Low to High)</option>
+                            <option value="price-desc">Price (High to Low)</option>
+                            <option value="spaces-asc">Spaces (Low to High)</option>
+                            <option value="spaces-desc">Spaces (High to Low)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-6">
+                        <div v-for="product in Products" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-3" v-text="product.title" ></h2>
+                            <figure class="text-center mb-4">
+                                <img class="max-w-full h-auto rounded-lg" v-bind:src="product.image" alt="Product Image" width="100">
+                            </figure>
+                            <p class="text-gray-600">Location: {{product.location}}</p>
+                            <p class="font-semibold text-lg text-gray-900 mt-2">Price: {{product.price}}</p>
+                            <p class="text-gray-600 mt-2">Space: {{product.spaces -cartCount(product.id) }}</p>
+                            <button v-on:click="addToCart(product)" button v-if="canAddToCart(product)" class="w-full py-2 bg-red-500 text-white rounded-lg mt-3 hover:bg-gray-600 transition duration-300">Add to Cart</button>
+                            <button disabled="disabled" v-else class="w-full py-2 bg-gray-400 text-white rounded-lg mt-3 cursor-not-allowed">Add to Cart</button>
+                            <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">All out!</span>
+                            <span v-else-if="product.spaces - cartCount(product.id) < 5" class="text-orange-500 font-bold mt-2"> 
+                                Only {{product.spaces - cartCount(product.id)}} left!</span>
+                            <span v-else class="text-blue-500 mt-2">Buy now!</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-else-if="!isHomePage && !showProduct" class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-6">Checkout</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 container mx-auto p-6 bg-white rounded-lg shadow-lg">
+                        <div class="flex flex-col">
+                            <label for="first-name" class="text-lg font-medium text-gray-700">First Name</label>
+                            <input id="first-name" v-model.trim="order.firstName" type="text" @input="validateOrder" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 shadow-md hover:shadow-lg transition-all duration-300">
+                            <span v-if="errors.firstName">{{ errors.firstName }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="last-name" class="text-lg font-medium text-gray-700">Last Name</label>
+                            <input id="last-name" v-model="order.lastName" type="text" @input="validateOrder" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 shadow-md hover:shadow-lg transition-all duration-300">
+                            <span v-if="errors.lastName">{{ errors.lastName }}</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="contact" class="text-lg font-medium text-gray-700">Contact #</label>
+                            <input id="contact" v-model="order.contact" type="text" @input="validateOrder" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 shadow-md hover:shadow-lg transition-all duration-300">
+                            <span v-if="errors.contact">{{ errors.contact }}</span>
+                        </div>
+                    </div>
+                    <h2 class="text-xl font-semibold mt-6 mb-2">Cart Items</h2>
+                    <div class="flex flex-wrap gap-6 justify-center">
+                        <div v-for="(item, index) in cart" :key="index" class="flex flex-col items-center w-50 bg-white p-4 rounded-lg shadow-lg">
+                            <img :src="item.image" alt="Product Image" class="w-32 h-32 rounded-lg shadow-md object-cover">
+                            <div class="mt-2 text-center">
+                                <p class="font-semibold text-lg">{{ item.title }}</p>
+                                <p class="text-gray-600">{{ item.location }}</p>
+                                <p class="text-red-500 font-bold">AED {{ item.price }}</p>
+                                <button v-on:click="removeFromCart(index)" class="mt-2 bg-red-500 text-white py-1 px-4 rounded-md hover:bg-red-600 focus:ring-2 focus:ring-red-500">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-semibold mt-6 mb-4">Order Information</h2>
+                    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+                        <p><strong>First Name:</strong> {{ order.firstName }}</p>
+                        <p><strong>Last Name:</strong> {{ order.lastName }}</p>
+                        <p><strong>Contact:</strong> {{ order.contact }}</p>
+                    </div>
+                    <button v-on:click="submitForm"  class="mt-6 w-full bg-red-500 text-white font-semibold p-3 rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-green-500 shadow-md transition duration-300">
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <script type="text/javascript">
+            let webstore = new Vue({
+                el: '#app',
+                data: {
+                    sitename: 'After School Activities',
+                    products: [],
+                    cart: [],
+                    showProduct: true,
+                    isHomePage: true,
+                    searchQuery: '',
+                    sortCriteria: 'title-asc',
+                    order: {
+                        firstName: '',
+                        lastName: '',
+                        contact: '',
+                    },
+                    errors: {
+                        firstName: '',
+                        lastName: '',
+                        contact: '',
+                    }
+                },
+                methods: {
+                    goToHomePage() {
+                        this.isHomePage = true;
+                        this.showProduct = true;
+                        this.cart = [];
+                    },
+                    goToProductsPage() {
+                        this.isHomePage = false;
+                        this.showProduct = true;
+                    },
+                    addToCart(product) {
+                        if (product.spaces > 0) { 
+                            this.cart.push({ ...product }); // Add a copy of the product
+                            product.spaces--; // Reduce available spaces
+                        }
+                    },
+                    showCheckout() {
+                        if (this.cart.length === 0) {
+                        alert("Your cart is empty. Add items before checking out.");
+                        return;
+                        }
+                        this.showProduct = !this.showProduct; 
+                    },
+                    validateOrder() {
+                        if (!this.order.firstName.trim()) {
+                            this.errors.firstName = 'First Name is required.';
+                        } else if (/[^a-zA-Z]/.test(this.order.firstName)) {
+                            this.errors.firstName = 'Enter a valid First Name.';
+                            this.order.firstName = this.order.firstName.replace(/[^a-zA-Z]/g, '');
+                        } else {
+                            this.errors.firstName = '';
+                        }
+                        if (!this.order.lastName.trim()) {
+                            this.errors.lastName = 'Last Name is required.';
+                        } else if (/[^a-zA-Z]/.test(this.order.lastName)) {
+                            this.errors.lastName = 'Enter a valid Last Name.';
+                            this.order.lastName = this.order.lastName.replace(/[^a-zA-Z]/g, '');
+                        } else {
+                            this.errors.lastName = '';
+                        }
+                            this.order.contact = this.order.contact.replace(/\D/g, ''); // Remove non-numeric characters
+                        if (!this.order.contact) {
+                            this.errors.contact = 'Contact number is required.';
+                        } else if (this.order.contact.length < 10) {
+                            this.errors.contact = 'Contact number must be at least 10 digits.';
+                        } else {
+                            this.errors.contact = '';
+                        }
+                    },
+                    submitForm() {
+                        if (!this.order.firstName.trim() || 
+                            !this.order.lastName.trim() || 
+                            !this.order.contact.trim()) {
+                                alert("Please fill out all required fields.");
+                                return;
+                            }
+                    fetch('http://localhost:3000/collection/orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            firstName: this.order.firstName,
+                            lastName: this.order.lastName,
+                            contact: this.order.contact,
+                            cart: this.cart
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Order submitted successfully!');
+                        this.cart = [];
+                    })
+                        .catch(error => console.error('Error submitting order:', error));
+                    },
+                    canAddToCart(product) {
+                        return product.spaces > this.cartCount(product.id);
+                    },
+                    cartCount(id) {
+                        let count = 0;
+                        for (let i = 0; i < this.cart.length; i++) {
+                            if (this.cart[i] === id) {
+                            count++;
+                            }
+                        }
+                        return count;
+                    },
+                    getImageUrl(imagePath) {
+                        return imagePath.replace('C:/Users/Student/Documents/After school Activities/frontend/images/, /images');
+                    },
+                    removeFromCart(index) {
+                        const item = this.cart[index];
+                        this.cart.splice(index, 1);
+                        const product = this.products.find(p => p.id === item.id);
+                        if (product) {
+                            product.spaces++; // Restore space when an item is removed
+                        }
+                        if (this.cart.length === 0) {
+                        this.showProduct = true;
+                        }
+                    },
+                },
+                computed: {
+                    cartItemCount() {
+                        return this.cart.length;
+                    },
+                    sortedProducts () {
+                        let productsArray = this.products.slice(0);
+                        const compare = (a, b, criteria) => {
+                        switch (criteria) {
+                            case 'title-asc':
+                                return a.title.localeCompare(b.title);
+                            case 'title-desc':
+                                return b.title.localeCompare(a.title);
+                            case 'location-asc':
+                                return a.location.localeCompare(b.location);
+                            case 'location-desc':
+                                return b.location.localeCompare(a.location);
+                            case 'price-asc':
+                                return a.price - b.price;
+                                case 'price-desc':
+                                return b.price - a.price;
+                            case 'spaces-asc':
+                                return a.spaces - b.spaces;
+                            case 'spaces-desc':
+                                return b.spaces - a.spaces;
+                            default:
+                                return 0; // Default case if no valid criteria
+                        }
+                        };
+                        return productsArray.sort((a, b) => compare(a, b, this.sortCriteria));
+                        },
+                        
+                    },
+                    mounted() {
+                        fetch('http://localhost:3000/collection/products') // Adjust URL based on server setup
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log("Fetched products:", data);
+                                this.products = data;
+                        })
+                        .catch(error => console.error('Error fetching products:', error));
+                    }
+                });
+        </script>
+    </body>
+</html>
