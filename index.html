@@ -127,6 +127,20 @@
                     }
                 },
                 methods: {
+                    async fetchProducts() {
+                        try {
+                            const response = await fetch(
+                                "https://backend-coursework-1.onrender.com/collection/lessons"
+                            ); // Make sure this URL is correct
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch products");
+                            }
+                            const data = await response.json();
+                                this.products = data; // Update the products array with fetched data
+                            } catch (error) {
+                            console.error("Error fetching products:", error);
+                        }
+                    },
                     goToHomePage() {
                         this.isHomePage = true;
                         this.showProduct = true;
