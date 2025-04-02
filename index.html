@@ -26,18 +26,8 @@
                 </div>
                 <div v-else-if="!isHomePage && showProduct" class="flex flex-col py-5 mt-5">
                     <div class="mb-4 items-start ml-5">
-                        <div>
                         <label for="search" class="mr-2">Search:</label>
-                        <input v-model="searchQuery" @input="debounceSearch" id="search" type="text" placeholder="Search for activities..." class="border p-2 rounded-md">
-                        <ul v-if="products.length">
-                            <li v-for="activity in activities" :key="activity._id">
-                              {{ product.title }} - {{ product.location }}
-                            </li>
-                          </ul>
-                          
-                          <p v-else>No activities found.</p>
-                        </div>
-                        </div>
+                        <input v-model="searchQuery" id="search" type="text" placeholder="Search for activities..." class="border p-2 rounded-md">
                         <label for="sort-by" class="mr-2">Sort By:</label>
                         <select v-model="sortCriteria" id="sort-by" class="border p-2 rounded-md">
                             <option value="title-asc">Title (A-Z)</option>
@@ -51,7 +41,7 @@
                         </select>
                     </div>
                     <div class="flex flex-wrap justify-center gap-6">
-                        <div v-for="product in products" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
+                        <div v-for="product in filteredProducts" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
                             <h2 class="text-2xl font-semibold text-gray-800 mb-3" v-text="product.title" ></h2>
                             <figure class="text-center mb-4">
                                 <img class="max-w-full h-auto rounded-lg" v-bind:src="product.image" alt="Product Image" width="100">
@@ -232,13 +222,7 @@
                         return product.spaces > this.cartCount(product.id);
                     },
                     cartCount(id) {
-                        let count = 0;
-                        for (let i = 0; i < this.cart.length; i++) {
-                            if (this.cart[i] === id) {
-                            count++;
-                            }
-                        }
-                        return count;
+                    return this.cart.filter(item => item.id === id).length;
                     },
                     removeFromCart(index) {
                         const item = this.cart[index];
@@ -251,54 +235,53 @@
                         this.showProduct = true;
                         }
                     },
-                    debounceSearch() {
-                        clearTimeout(this.debounceTimer);
-                        this.debounceTimer = setTimeout(this.searchActivities, 300); // Delay of 300ms
-                        },
-                        searchActivities() {
-                        if (!this.searchQuery.trim()) {
-                            this.activities = []; // Clear results if query is empty
-                            return;
-                        }
-                        fetch(`http://localhost:3000/collection/activities/search?q=${encodeURIComponent(this.searchQuery)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                            this.activities = data;
-                            })
-                            .catch(error => console.error("Error fetching search results:", error));
-                    }
+                    searchProducts() {
+      // This will trigger computed property `filteredProducts` to update
+    },              
                 },
                 computed: {
                     cartItemCount() {
                         return this.cart.length;
                     },
-                    sortedProducts () {
-                        let productsArray = this.products.slice(0);
-                        const compare = (a, b, criteria) => {
-                        switch (criteria) {
-                            case 'title-asc':
-                                return a.title.localeCompare(b.title);
-                            case 'title-desc':
-                                return b.title.localeCompare(a.title);
-                            case 'location-asc':
-                                return a.location.localeCompare(b.location);
-                            case 'location-desc':
-                                return b.location.localeCompare(a.location);
-                            case 'price-asc':
-                                return a.price - b.price;
-                                case 'price-desc':
-                                return b.price - a.price;
-                            case 'spaces-asc':
-                                return a.spaces - b.spaces;
-                            case 'spaces-desc':
-                                return b.spaces - a.spaces;
-                            default:
-                                return 0; // Default case if no valid criteria
-                        }
-                        };
-                        return productsArray.sort((a, b) => compare(a, b, this.sortCriteria));
-                        },
-                        
+                    filteredProducts() {
+      // Filter products based on search query
+      let filtered = this.products.filter(product => {
+        return (
+          product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          product.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      });
+
+      // Sort the filtered products based on the selected criteria
+      switch (this.sortCriteria) {
+        case "title-asc":
+          filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+        case "title-desc":
+          filtered = filtered.sort((a, b) => b.title.localeCompare(a.title));
+          break;
+        case "location-asc":
+          filtered = filtered.sort((a, b) => a.location.localeCompare(b.location));
+          break;
+        case "location-desc":
+          filtered = filtered.sort((a, b) => b.location.localeCompare(a.location));
+          break;
+        case "price-asc":
+          filtered = filtered.sort((a, b) => a.price - b.price);
+          break;
+        case "price-desc":
+          filtered = filtered.sort((a, b) => b.price - a.price);
+          break;
+        case "spaces-asc":
+          filtered = filtered.sort((a, b) => a.spaces - b.spaces);
+          break;
+        case "spaces-desc":
+          filtered = filtered.sort((a, b) => b.spaces - a.spaces);
+          break;
+      }
+
+      return filtered;
+    },
                     },
                     mounted() {
                         this.fetchProducts(); // Call when the component loads
