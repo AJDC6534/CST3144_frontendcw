@@ -20,9 +20,20 @@
                 <div v-if="isHomePage" class="flex flex-col items-center py-5 mt-5 bg-gray-50">
                     <h1 class="text-4xl font-bold text-gray-800 mb-5">Welcome to MDX AfterSchool Activities</h1>
                     <p class="text-lg text-gray-600 mb-5">Fueling Fun, Fostering Growth: After-School Adventures Await!</p>
-                    <button @click="goToProductsPage" class="px-6 py-3 bg-red-500 text-white rounded-lg text-lg hover:bg-gray-600 transition duration-300">
+                    <div class="relative w-full max-w-lg">
+                        <div class="overflow-hidden">
+                          <div :style="{ transform: `translateX(-${currentIndex * 100}%)` }" class="flex transition-transform duration-500">
+                            <img v-for="(image, index) in images" :key="index" :src="image" alt="Slider Image" class="w-full h-64 object-cover" />
+                          </div>
+                        </div>
+                        <button @click="prevImage" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">‹</button>
+                        <button @click="nextImage" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full">›</button>
+                      </div>
+                  
+                      <button @click="goToProductsPage" class="px-6 py-3 bg-red-500 text-white rounded-lg text-lg hover:bg-gray-600 transition duration-300 mt-5">
                         Start Browsing
-                    </button>
+                      </button>
+                    </div>
                 </div>
                 <div v-else-if="!isHomePage && showProduct" class="flex flex-col py-5 mt-5">
                     <div class="mb-4 items-start ml-5">
@@ -124,45 +135,41 @@
                         firstName: '',
                         lastName: '',
                         contact: '',
-                    }
+                    },
+                    currentIndex: 0, // New property to track the current slide
+                        images: [
+                            "C:/Users/Student/CST3144_frontendcw/images/sliderimage1.jpg", // Example images, replace with actual URLs
+                            'C:/Users/Student/CST3144_frontendcw/images/sliderimage1.jpg',
+                            'C:/Users/Student/CST3144_frontendcw/images/sliderimage1.jpg',
+                        ],
                 },
                 methods: {
                     async fetchProducts() {
-    try {
-        // Construct the API URL with query parameters for search and sorting
-        const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
-        const params = new URLSearchParams();
-        
-        if (this.searchQuery) {
-            params.append("search", this.searchQuery); // Add search query
-        }
-        if (this.sortCriteria) {
-            params.append("sort", this.sortCriteria); // Add sort criteria
-        }
-        
-        // Append query parameters to the URL
-        url.search = params.toString();
-        
-        // Make the API request
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Failed to fetch products");
-        }
-        
-        const data = await response.json();
-
-        // Update the products array with fetched data
-        this.products = data.map(product => {
-            // If image path is local, prepend the base URL (if necessary)
-            if (product.image && !product.image.startsWith('http')) {
-                product.image = `https://cst3144backendcw.onrender.com/images/${product.image.split("\\").pop()}`;
-            }
-            return product;
-        });
-    } catch (error) {
-        console.error("Error fetching products:", error);
-    }
-},
+                        try {
+                            const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
+                            const params = new URLSearchParams();
+                            if (this.searchQuery) {
+                                params.append("search", this.searchQuery); // Add search query
+                            }
+                            if (this.sortCriteria) {
+                                params.append("sort", this.sortCriteria); // Add sort criteria
+                            }
+                            url.search = params.toString();
+                            const response = await fetch(url);
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch products");
+                            }
+                            const data = await response.json();
+                            this.products = data.map(product => {
+                                if (product.image && !product.image.startsWith('http')) {
+                                    product.image = `https://cst3144backendcw.onrender.com/images/${product.image.split("\\").pop()}`;
+                                }
+                                return product;
+                            });
+                        } catch (error) {
+                            console.error("Error fetching products:", error);
+                        }
+                    },
                     canAddToCart(product) {
                         return product.spaces > this.cartCount(product.id);
                     },
@@ -190,6 +197,20 @@
                         this.isHomePage = true;
                         this.showProduct = true;
                         this.cart = [];
+                    },
+                    nextImage() {
+                        if (this.currentIndex < this.images.length - 1) {
+                          this.currentIndex++;
+                        } else {
+                          this.currentIndex = 0;
+                        }
+                        },
+                    prevImage() {
+                        if (this.currentIndex > 0) {
+                        this.currentIndex--;
+                        } else {
+                        this.currentIndex = this.images.length - 1;
+                        }
                     },
                     goToProductsPage() {
                         this.isHomePage = false;
