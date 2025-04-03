@@ -44,7 +44,7 @@
                         <div v-for="product in filteredProducts" :key="product.id" class="bg-white border border-gray-200 rounded-lg w-60 m-3 p-5 shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-xl">
                             <h2 class="text-2xl font-semibold text-gray-800 mb-3" v-text="product.title" ></h2>
                             <figure class="text-center mb-4">
-                                <img class="max-w-full h-auto rounded-lg" v-bind:src="product.image" alt="Product Image" width="100">
+                                <img class="max-w-full h-auto rounded-lg" v-bind:src="`https://cst3144backendcw.onrender.com/images/${product.image}`" alt="Product Image" width="100">
                             </figure>
                             <p class="text-gray-600">Location: {{product.location}}</p>
                             <p class="font-semibold text-lg text-gray-900 mt-2">Price: {{product.price}}</p>
