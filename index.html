@@ -5,7 +5,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-        <script src="product.js"></script>
+
     </head>
     <body>
         <div id="app">
@@ -129,16 +129,49 @@
                 methods: {
                     async fetchProducts() {
                         try {
-                            const response = await fetch(
-                                "https://cst3144backendcw.onrender.com/collection/products"
-                            ); // Make sure this URL is correct
-                            if (!response.ok) {
-                                throw new Error("Failed to fetch products");
-                            }
-                            const data = await response.json();
-                                this.products = data; // Update the products array with fetched data
-                            } catch (error) {
+                        // Construct the API URL with query parameters for search and sorting
+                            const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
+                            const params = new URLSearchParams();
+                        if (this.searchQuery) {
+                            params.append("search", this.searchQuery); // Add search query
+                        }
+                        if (this.sortCriteria) {
+                            params.append("sort", this.sortCriteria); // Add sort criteria
+                        }
+                        // Append query parameters to the URL
+                        url.search = params.toString();
+                        // Make the API request
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch products");
+                        }
+                        const data = await response.json();
+                        this.products = data; // Update the products array with fetched data
+                        } catch (error) {
                             console.error("Error fetching products:", error);
+                        }
+                    },
+                    canAddToCart(product) {
+                        return product.spaces > this.cartCount(product.id);
+                    },
+                    cartCount(id) {
+                        return 0;
+                    },
+                    removeFromCart(index) {
+                        const item = this.cart[index];
+                        this.cart.splice(index, 1);
+                        const product = this.products.find(product => product.id === item.id);
+                        if (product) {
+                            product.spaces++; // Restore space when an item is removed
+                        }
+                        if (this.cart.length === 0) {
+                            this.showProduct = true;
+                        }
+                    },          
+                    addToCart(product) {
+                        if (product.spaces > 0) { 
+                            this.cart.push({ ...product }); // Add a copy of the product
+                            product.spaces--; // Reduce available spaces
                         }
                     },
                     goToHomePage() {
@@ -150,16 +183,10 @@
                         this.isHomePage = false;
                         this.showProduct = true;
                     },
-                    addToCart(product) {
-                        if (product.spaces > 0) { 
-                            this.cart.push({ ...product }); // Add a copy of the product
-                            product.spaces--; // Reduce available spaces
-                        }
-                    },
                     showCheckout() {
                         if (this.cart.length === 0) {
-                        alert("Your cart is empty. Add items before checking out.");
-                        return;
+                            alert("Your cart is empty. Add items before checking out.");
+                            return;
                         }
                         this.showProduct = !this.showProduct; 
                     },
@@ -194,99 +221,109 @@
                             !this.order.lastName.trim() || 
                             !this.order.contact.trim()) {
                                 alert("Please fill out all required fields.");
-                                return;
-                            }
-                            fetch('https://cst3144backendcw.onrender.com/collection/customer', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ 
-                                    firstName: this.order.firstName,
-                                    lastName: this.order.lastName,
-                                    contact: this.order.contact,
-                                    cart: this.cart.map(item => ({
-                                        id: item.id,
-                                        title: item.title,
-                                        price: item.price,
-                                        location: item.location
-                                    }))
-                                })
+                        return;
+                        }
+                        // Process cart to sum up spaces correctly
+                        const cartSummary = this.cart.reduce((acc, product) => {
+                        const existingProduct = acc.find(item => item.id === product.id);
+                        if (existingProduct) {
+                            existingProduct.space += 1; // Increase count for duplicate items
+                        } else {
+                            acc.push({
+                                id: product.id,
+                                title: product.title,
+                                price: product.price,
+                                location: product.location,
+                                space: 1 // Start with 1 since it's the first occurrence
+                            });
+                        }
+                        return acc;
+                        }, []);
+                        fetch('https://cst3144backendcw.onrender.com/collection/customer', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                            firstName: this.order.firstName,
+                            lastName: this.order.lastName,
+                            contact: this.order.contact,
+                            cart: cartSummary // Use processed cart summary
                             })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert('Order submitted successfully!');
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('Order submitted successfully!');
+                        this.updateSpaces();
                         this.cart = [];
-                    })
+                        this.isHomePage = true;
+                        })
                         .catch(error => console.error('Error submitting order:', error));
                     },
-                    canAddToCart(product) {
-                        return product.spaces > this.cartCount(product.id);
-                    },
-                    cartCount(id) {
-                    return this.cart.filter(item => item.id === id).length;
-                    },
-                    removeFromCart(index) {
-                        const item = this.cart[index];
-                        this.cart.splice(index, 1);
-                        const product = this.products.find(p => p.id === item.id);
-                        if (product) {
-                            product.spaces++; // Restore space when an item is removed
+                    updateSpaces() {
+                        this.cart.forEach(product => {
+                        const updatedSpaces = product.spaces - 1; // Reduce available spaces by 1
+                        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product._id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ spaces: updatedSpaces })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.msg === 'success') {
+                                console.log(`Spaces updated for ${product.title}`);
+                        } else {
+                            console.error(`Failed to update spaces for ${product.title}:`, data.error);
                         }
-                        if (this.cart.length === 0) {
-                        this.showProduct = true;
-                        }
-                    },
-                    searchProducts() {
-      // This will trigger computed property `filteredProducts` to update
-    },              
+                        })
+                        .catch(error => console.error('Error updating spaces:', error));
+                        });
+                    }
                 },
                 computed: {
                     cartItemCount() {
                         return this.cart.length;
                     },
                     filteredProducts() {
-      // Filter products based on search query
-      let filtered = this.products.filter(product => {
-        return (
-          product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          product.location.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-      });
-
-      // Sort the filtered products based on the selected criteria
-      switch (this.sortCriteria) {
-        case "title-asc":
-          filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
-          break;
-        case "title-desc":
-          filtered = filtered.sort((a, b) => b.title.localeCompare(a.title));
-          break;
-        case "location-asc":
-          filtered = filtered.sort((a, b) => a.location.localeCompare(b.location));
-          break;
-        case "location-desc":
-          filtered = filtered.sort((a, b) => b.location.localeCompare(a.location));
-          break;
-        case "price-asc":
-          filtered = filtered.sort((a, b) => a.price - b.price);
-          break;
-        case "price-desc":
-          filtered = filtered.sort((a, b) => b.price - a.price);
-          break;
-        case "spaces-asc":
-          filtered = filtered.sort((a, b) => a.spaces - b.spaces);
-          break;
-        case "spaces-desc":
-          filtered = filtered.sort((a, b) => b.spaces - a.spaces);
-          break;
-      }
-
-      return filtered;
-    },
+                    // Filter products based on search query
+                        let filtered = this.products.filter(product => {
+                        return (
+                            product.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                            product.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    });
+                    // Sort the filtered products based on the selected criteria
+                    switch (this.sortCriteria) {
+                        case "title-asc":
+                            filtered = filtered.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                        case "title-desc":
+                            filtered = filtered.sort((a, b) => b.title.localeCompare(a.title));
+                        break;
+                        case "location-asc":
+                            filtered = filtered.sort((a, b) => a.location.localeCompare(b.location));
+                        break;
+                        case "location-desc":
+                            filtered = filtered.sort((a, b) => b.location.localeCompare(a.location));
+                        break;
+                        case "price-asc":
+                            filtered = filtered.sort((a, b) => a.price - b.price);
+                        break;
+                        case "price-desc":
+                            filtered = filtered.sort((a, b) => b.price - a.price);
+                        break;
+                        case "spaces-asc":
+                            filtered = filtered.sort((a, b) => a.spaces - b.spaces);
+                        break;
+                        case "spaces-desc":
+                            filtered = filtered.sort((a, b) => b.spaces - a.spaces);
+                        break;
+                        }
+                        return filtered;
                     },
-                    mounted() {
-                        this.fetchProducts(); // Call when the component loads
-                    }
-                });
+                },
+                mounted() {
+                    this.fetchProducts(); // Call when the component loads
+                }
+            });
         </script>
     </body>
 </html>
