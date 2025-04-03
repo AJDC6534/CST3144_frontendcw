@@ -128,42 +128,29 @@
                 },
                 methods: {
                     async fetchProducts() {
-    try {
-        // Construct the API URL with query parameters for search and sorting
-        const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
-        const params = new URLSearchParams();
-        if (this.searchQuery) {
-            params.append("search", this.searchQuery); // Add search query
-        }
-        if (this.sortCriteria) {
-            params.append("sort", this.sortCriteria); // Add sort criteria
-        }
-        // Append query parameters to the URL
-        url.search = params.toString();
-        
-        // Make the API request
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
-
-        // Log the response data for debugging
-        console.log(data);
-
-        // Make sure image URL is complete
-        data.forEach(product => {
-            if (product.image) {
-                product.image = `https://cst3144backendcw.onrender.com/images/${product.image}`;
-            }
-        });
-
-        this.products = data; // Update the products array with fetched data
-    } catch (error) {
-        console.error("Error fetching products:", error);
-    }
-},
+                        try {
+                        // Construct the API URL with query parameters for search and sorting
+                            const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
+                            const params = new URLSearchParams();
+                        if (this.searchQuery) {
+                            params.append("search", this.searchQuery); // Add search query
+                        }
+                        if (this.sortCriteria) {
+                            params.append("sort", this.sortCriteria); // Add sort criteria
+                        }
+                        // Append query parameters to the URL
+                        url.search = params.toString();
+                        // Make the API request
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch products");
+                        }
+                        const data = await response.json();
+                        this.products = data; // Update the products array with fetched data
+                        } catch (error) {
+                            console.error("Error fetching products:", error);
+                        }
+                    },
                     canAddToCart(product) {
                         return product.spaces > this.cartCount(product.id);
                     },
