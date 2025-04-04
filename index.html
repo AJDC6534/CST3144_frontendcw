@@ -196,16 +196,10 @@
                         this.showProduct = true;
                         this.cart = [];
                     },
-    setImage(index) {
-      this.currentIndex = index;
-    },
-    startAutoSlide() {
+                    startAutoSlide() {
       this.autoSlideInterval = setInterval(() => {
-        this.nextImage();
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
       }, 5000);
-    },
-    stopAutoSlide() {
-      clearInterval(this.autoSlideInterval);
     },
                     goToProductsPage() {
                         this.isHomePage = false;
@@ -351,7 +345,10 @@
                 mounted() {
                     this.fetchProducts(); 
                     this.startAutoSlide();
-                }
+                },
+                beforeDestroy() {
+    clearInterval(this.autoSlideInterval);
+  },
             });
         </script>
     </body>
