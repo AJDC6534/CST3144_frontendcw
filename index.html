@@ -10,8 +10,9 @@
     <body>
         <div id="app">
             <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
-                <a href="#" @click.prevent="goToHomePage" class="text-3xl font-semibold text-white" v-text="sitename">
-                    <img :src="logoSrc" alt="logo" class="h-10">
+                <a href="#" @click.prevent="goToHomePage" class="flex items-center">
+                    <img :src="logoSrc" alt="logo" class="w-32 h-auto mr-4"> <!-- Display the logo -->
+                    <span class="text-3xl font-semibold" v-text="sitename"></span> <!-- Display the site name -->
                 </a>
                 <button v-if="!isHomePage" v-on:click="showCheckout"
                     :class="[
