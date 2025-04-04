@@ -257,7 +257,8 @@
                                 title: product.title,
                                 price: product.price,
                                 location: product.location,
-                                space: 1 // Start with 1 since it's the first occurrence
+                                space: 1,
+                                spaces: product.spaces,
                             });
                         }
                         return acc;
