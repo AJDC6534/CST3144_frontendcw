@@ -19,7 +19,7 @@
             <main>
                 <div v-if="isHomePage" class="relative w-screen h-screen overflow-hidden">
                     <div class="absolute inset-0 transition-all duration-700">
-                        <img :src="images[currentIndex]" class="w-full h-full object-cover transition-opacity duration-700 ease-in-out">
+                        <img :src="images[currentIndex]" class="h-full object-cover transition-opacity duration-700 ease-in-out">
                     </div>
                     <button @click="prevImage" class="absolute top-1/2 left-5 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 rounded-full hover:bg-opacity-75 transition">
                         ❮
