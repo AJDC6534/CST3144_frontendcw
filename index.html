@@ -253,6 +253,7 @@
                             existingProduct.space += 1; // Increase count for duplicate items
                         } else {
                             acc.push({
+                                _id: product._id,  
                                 id: product.id,
                                 title: product.title,
                                 price: product.price,
@@ -285,7 +286,7 @@
                     updateSpaces(cartSummary) {
     cartSummary.forEach(product => {
         const updatedSpaces = product.spaces - product.space; // Deduct the correct number
-        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product.id}`, {
+        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product._id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ spaces: updatedSpaces })
