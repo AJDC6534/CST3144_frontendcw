@@ -11,7 +11,7 @@
         <div id="app">
             <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
                 <a href="#" @click.prevent="goToHomePage" class="flex items-center">
-                    <img :src="logoSrc" alt="logo" class="w-32 h-auto mr-4"></a><!-- Display the site name -->
+                    <img :src="logoSrc" alt="logo" class="w-50 h-auto mr-4"></a><!-- Display the site name -->
                 <button v-if="!isHomePage" v-on:click="showCheckout"
                     :class="[
                     'text-white py-1 px-2 rounded-lg flex items-center hover:bg-gray-600 transition duration-300',
