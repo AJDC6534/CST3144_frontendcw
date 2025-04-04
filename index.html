@@ -149,7 +149,7 @@
                 methods: {
                     async fetchProducts() {
                         try {
-                            const url = new URL("https://cst3144backendcw.onrender.com/collection/products/search");
+                            const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
                             const params = new URLSearchParams();
                             if (this.searchQuery) {
                                 params.append("q", this.searchQuery); // Add search query
