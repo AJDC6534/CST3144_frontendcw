@@ -275,29 +275,29 @@
                         .then(response => response.json())
                         .then(data => {
                             alert('Order submitted successfully!');
-                        this.updateSpaces();
+                        this.updateSpaces(cartSummary);
                         this.cart = [];
                         this.isHomePage = true;
                         })
                         .catch(error => console.error('Error submitting order:', error));
                     },
-                    updateSpaces() {
-                        this.cart.forEach(product => {
-                        const updatedSpaces = product.spaces - 1; // Reduce available spaces by 1
-                        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product._id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ spaces: updatedSpaces })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.msg === 'success') {
-                                console.log(`Spaces updated for ${product.title}`);
-                        } else {
-                            console.error(`Failed to update spaces for ${product.title}:`, data.error);
-                        }
-                        })
-                        .catch(error => console.error('Error updating spaces:', error));
+                    updateSpaces(cartSummary) {
+    cartSummary.forEach(product => {
+        const updatedSpaces = product.spaces - product.space; // Deduct the correct number
+        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ spaces: updatedSpaces })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.msg === 'success') {
+                console.log(`Spaces updated for ${product.title}`);
+            } else {
+                console.error(`Failed to update spaces for ${product.title}:`, data.error);
+            }
+        })
+        .catch(error => console.error('Error updating spaces:', error));
                         });
                     }
                 },
