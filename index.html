@@ -151,6 +151,7 @@
                             'https://www.stcc.edu/media/departments/stem-starter/coding-robotics-challenge-2.jpg',
                             'https://creeksideeg.com/wp-content/uploads/2023/02/AlexGuitarWorkshopPhoto.jpg'
                         ],
+                        autoSlideInterval: null
                 },
                 methods: {
                     async fetchProducts() {
@@ -208,10 +209,21 @@
                         this.cart = [];
                     },
                     nextImage() {
-        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      this.currentIndex = (this.currentIndex + 1) % this.images.length;
     },
     prevImage() {
-        this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+      this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+    },
+    setImage(index) {
+      this.currentIndex = index;
+    },
+    startAutoSlide() {
+      this.autoSlideInterval = setInterval(() => {
+        this.nextImage();
+      }, 5000);
+    },
+    stopAutoSlide() {
+      clearInterval(this.autoSlideInterval);
     },
                     goToProductsPage() {
                         this.isHomePage = false;
@@ -355,7 +367,8 @@
                     },
                 },
                 mounted() {
-                    this.fetchProducts(); // Call when the component loads
+                    this.fetchProducts(); 
+                    this.startAutoSlide();
                 }
             });
         </script>
