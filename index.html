@@ -9,7 +9,7 @@
     </head>
     <body>
         <div id="app">
-            <header class="bg-gradient-to-t from-gray-300 via-gray-500 to-gray-700 px-7 flex items-center justify-between text-white">
+            <header class="bg-gradient-to-t from-gray-300 via-gray-500 to-gray-600 px-7 flex rounded-lg items-center justify-between text-white">
                 <a href="#" @click.prevent="goToHomePage" class="flex items-center">
                     <img :src="logoSrc" alt="logo" class="w-64 h-auto mr-4 items-center"></a><!-- Display the site name -->
                 <button v-if="!isHomePage" v-on:click="showCheckout"
