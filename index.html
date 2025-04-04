@@ -18,8 +18,8 @@
             </header>
             <main>
                 <div v-if="isHomePage" class="relative w-screen h-screen overflow-hidden">
-                    <div class="absolute inset-0">
-                        <img :src="images[currentIndex]" class="w-full h-full object-cover transition-all duration-700">
+                    <div class="absolute inset-0 transition-all duration-700">
+                        <img :src="images[currentIndex]" class="w-full h-full object-cover transition-opacity duration-700 ease-in-out">
                     </div>
                     <button @click="prevImage" class="absolute top-1/2 left-5 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 rounded-full hover:bg-opacity-75 transition">
                         ❮
@@ -31,7 +31,7 @@
                         <span v-for="(image, index) in images" :key="index" 
                             class="w-4 h-4 rounded-full cursor-pointer transition-all"
                             :class="{'bg-white': currentIndex === index, 'bg-gray-400': currentIndex !== index}"
-                            @click="currentIndex = index"></span>
+                            @click="setImage(index)"></span>
                     </div>
                     <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white bg-black bg-opacity-40">
                         <h1 class="text-5xl font-bold drop-shadow-lg">Welcome to MDX AfterSchool Activities</h1>
@@ -40,7 +40,7 @@
                             Start Browsing
                         </button>
                     </div>
-                </div>
+                </div>                
                 <div v-else-if="!isHomePage && showProduct" class="flex flex-col py-5 mt-5">
                     <div class="mb-4 items-start ml-5">
                         <label for="search" class="mr-2">Search:</label>
