@@ -132,8 +132,8 @@
                     },
                     currentIndex: 0, // New property to track the current slide
                         images: [
-                            'https://www.shutterstock.com/image-vector/set-vector-illustration-kids-after-600nw-2436894799.jpg',
-                            'https://i.pinimg.com/736x/9f/6a/cd/9f6acda227b8eba4d9ba231d411eb90e.jpg',
+                            'https://www.shutterstock.com/image-vector/simple-illustration-after-school-activities-600nw-2349418281.jpg',
+                            'https://i.pinimg.com/736x/9f/6a/cd/9f6acda227b8eba4d9ba231d411eb90e.jpg', // Example images, replace with actual URLs
                             'https://www.shutterstock.com/image-photo/group-different-people-learn-how-600nw-2370239129.jpg',
                             'https://www.visitdubai.com/-/media/gathercontent/article/a/arts-and-crafts-experiences-in-dubai/media/artsandcraftsdubaijamjarjpg.jpg?rev=077adfa52dbe446bb97be5c4384be2f4&cx=0.5&cy=0.5&cw=1180&ch=590',
                             'https://www.stcc.edu/media/departments/stem-starter/coding-robotics-challenge-2.jpg',
@@ -196,14 +196,17 @@
                         this.showProduct = true;
                         this.cart = [];
                     },
-                    startAutoSlide() {
-                        this.autoSlideInterval = setInterval(() => {
-                        this.nextImage();
-                        }, 5000);
-                    },
-                    stopAutoSlide() {
-                        clearInterval(this.autoSlideInterval);
-                    },
+    setImage(index) {
+      this.currentIndex = index;
+    },
+    startAutoSlide() {
+      this.autoSlideInterval = setInterval(() => {
+        this.nextImage();
+      }, 5000);
+    },
+    stopAutoSlide() {
+      clearInterval(this.autoSlideInterval);
+    },
                     goToProductsPage() {
                         this.isHomePage = false;
                         this.showProduct = true;
