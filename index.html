@@ -11,7 +11,7 @@
         <div id="app">
             <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
                 <a href="#" @click.prevent="goToHomePage" class="text-3xl font-semibold text-white" v-text="sitename">
-                    <img src="C:\Users\Student\CST3144_frontendcw\logo\logo.png" alt="logo">
+                    <img :src="logoSrc" alt="logo" class="h-10">
                 </a>
                 <button v-if="!isHomePage" v-on:click="showCheckout"
                     :class="[
@@ -121,6 +121,7 @@
                 el: '#app',
                 data: {
                     sitename: 'After School Activities',
+                    logoSrc: 'C:/Users/Student/CST3144_frontendcw/logo/logo.png',
                     products: [],
                     cart: [],
                     showProduct: true,
