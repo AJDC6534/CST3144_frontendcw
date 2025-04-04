@@ -14,8 +14,8 @@
                     <img :src="logoSrc" alt="logo" class="w-64 h-auto mr-4 items-center"></a><!-- Display the site name -->
                 <button v-if="!isHomePage" v-on:click="showCheckout"
                     :class="[
-                    'text-white py-1 px-2 rounded-lg flex items-center hover:bg-red-700 transition duration-300',
-                    cartItemCount === 0 ? 'bg-gray-500' : 'bg-red-500'
+                    'text-white py-1 px-2 rounded-lg flex items-center transition duration-300',
+                    cartItemCount === 0 ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-700'
                     ]">
                     <span class="mr-2"> {{ cartItemCount }} </span>
                     <span class="fas fa-cart-plus">Checkout</span>
