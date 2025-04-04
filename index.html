@@ -53,13 +53,13 @@
                             </figure>
                             <p class="text-gray-600">Location: {{product.location}}</p>
                             <p class="font-semibold text-lg text-gray-900 mt-2">Price: {{product.price}}</p>
-                            <p class="text-gray-600 mt-2">Space: {{product.spaces -cartCount(product.id) }}</p>
+                            <p class="text-gray-600 mt-2">Available: {{product.spaces -cartCount(product.id) }}</p>
                             <button v-on:click="addToCart(product)" button v-if="canAddToCart(product)" class="w-full py-2 bg-red-500 text-white rounded-lg mt-3 hover:bg-gray-600 transition duration-300">Add to Cart</button>
                             <button disabled="disabled" v-else class="w-full py-2 bg-gray-400 text-white rounded-lg mt-3 cursor-not-allowed">Add to Cart</button>
-                            <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">All out!</span>
+                            <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">Fully Booked</span>
                             <span v-else-if="product.spaces - cartCount(product.id) < 5" class="text-orange-500 font-bold mt-2"> 
                                 Only {{product.spaces - cartCount(product.id)}} left!</span>
-                            <span v-else class="text-blue-500 mt-2">Buy now!</span>
+                            <span v-else class="text-blue-500 mt-2">Join Now</span>
                         </div>
                     </div>
                 </div>
@@ -147,7 +147,7 @@
                             const url = new URL("https://cst3144backendcw.onrender.com/collection/products");
                             const params = new URLSearchParams();
                             if (this.searchQuery) {
-                                params.append("search", this.searchQuery); // Add search query
+                                params.append("q", this.searchQuery); // Add search query
                             }
                             if (this.sortCriteria) {
                                 params.append("sort", this.sortCriteria); // Add sort criteria
@@ -197,10 +197,10 @@
                         this.cart = [];
                     },
                     startAutoSlide() {
-      this.autoSlideInterval = setInterval(() => {
-        this.currentIndex = (this.currentIndex + 1) % this.images.length;
-      }, 5000);
-    },
+                        this.autoSlideInterval = setInterval(() => {
+                        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                        }, 3000);
+                    },
                     goToProductsPage() {
                         this.isHomePage = false;
                         this.showProduct = true;
@@ -347,8 +347,8 @@
                     this.startAutoSlide();
                 },
                 beforeDestroy() {
-    clearInterval(this.autoSlideInterval);
-  },
+                    clearInterval(this.autoSlideInterval);
+                },
             });
         </script>
     </body>
