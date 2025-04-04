@@ -11,7 +11,11 @@
         <div id="app">
             <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
                 <a href="#" @click.prevent="goToHomePage" class="text-3xl font-semibold text-white" v-text="sitename"></a>
-                <button v-if="!isHomePage" v-on:click="showCheckout" class="text-white py-1 px-2 rounded-lg flex items-center hover:bg-gray-600 transition duration-300', cartItemCount === 0 ? 'bg-gray-400' : 'bg-red-500">
+                <button v-if="!isHomePage" v-on:click="showCheckout"
+                    :class="[
+                    'text-white py-1 px-2 rounded-lg flex items-center hover:bg-gray-600 transition duration-300',
+                    cartItemCount === 0 ? 'bg-gray-400' : 'bg-red-500'
+                    ]">
                     <span class="mr-2"> {{ cartItemCount }} </span>
                     <span class="fas fa-cart-plus">Checkout</span>
                 </button>                
@@ -284,22 +288,22 @@
                         .catch(error => console.error('Error submitting order:', error));
                     },
                     updateSpaces(cartSummary) {
-    cartSummary.forEach(product => {
-        const updatedSpaces = product.spaces - product.space; // Deduct the correct number
-        fetch(`https://cst3144backendcw.onrender.com/collection/products/${product._id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ spaces: updatedSpaces })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.msg === 'success') {
-                console.log(`Spaces updated for ${product.title}`);
-            } else {
-                console.error(`Failed to update spaces for ${product.title}:`, data.error);
-            }
-        })
-        .catch(error => console.error('Error updating spaces:', error));
+                        cartSummary.forEach(product => {
+                            const updatedSpaces = product.spaces - product.space; // Deduct the correct number
+                            fetch(`https://cst3144backendcw.onrender.com/collection/products/${product._id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ spaces: updatedSpaces })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.msg === 'success') {
+                                    console.log(`Spaces updated for ${product.title}`);
+                                } else {
+                                    console.error(`Failed to update spaces for ${product.title}:`, data.error);
+                                }
+                            })
+                            .catch(error => console.error('Error updating spaces:', error));
                         });
                     }
                 },
