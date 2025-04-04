@@ -19,9 +19,9 @@
             <main>
                 <div v-if="isHomePage" class="flex flex-col items-center py-5 mt-5 bg-gray-50">
                     <div class="relative w-full max-w-2xl mt-5">
-                        <h1 class="text-4xl font-bold text-gray-800 mb-5">Welcome to MDX AfterSchool Activities</h1>
-                        <p class="text-lg text-gray-600 mb-5">Fueling Fun, Fostering Growth: After-School Adventures Await!</p>
                         <div class="overflow-hidden relative rounded-lg shadow-lg">
+                            <h1 class="text-4xl font-bold text-gray-800 mb-5">Welcome to MDX AfterSchool Activities</h1>
+                            <p class="text-lg text-gray-600 mb-5">Fueling Fun, Fostering Growth: After-School Adventures Await!</p>
                             <img :src="images[currentIndex]" class="w-full h-80 object-cover transition-all duration-500">
                             <button @click="prevImage" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600">
                                 ❮
