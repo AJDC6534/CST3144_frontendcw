@@ -21,18 +21,6 @@
                     <div class="absolute inset-0 transition-all duration-700">
                         <img :src="images[currentIndex]" class="w-full h-full object-cover transition-opacity duration-700 ease-in-out">
                     </div>
-                    <button @click="prevImage" class="absolute top-1/2 left-5 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 rounded-full hover:bg-opacity-75 transition">
-                        ❮
-                    </button>
-                    <button @click="nextImage" class="absolute top-1/2 right-5 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-4 rounded-full hover:bg-opacity-75 transition">
-                        ❯
-                    </button>
-                    <div class="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                        <span v-for="(image, index) in images" :key="index" 
-                            class="w-4 h-4 rounded-full cursor-pointer transition-all"
-                            :class="{'bg-white': currentIndex === index, 'bg-gray-400': currentIndex !== index}"
-                            @click="setImage(index)"></span>
-                    </div>
                     <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white bg-black bg-opacity-40">
                         <h1 class="text-5xl font-bold drop-shadow-lg">Welcome to MDX AfterSchool Activities</h1>
                         <p class="text-lg mt-3 drop-shadow-lg">Fueling Fun, Fostering Growth: After-School Adventures Await!</p>
@@ -144,8 +132,8 @@
                     },
                     currentIndex: 0, // New property to track the current slide
                         images: [
-                            '',
-                            'https://i.pinimg.com/736x/9f/6a/cd/9f6acda227b8eba4d9ba231d411eb90e.jpg', // Example images, replace with actual URLs
+                            'https://www.shutterstock.com/image-vector/set-vector-illustration-kids-after-600nw-2436894799.jpg',
+                            'https://i.pinimg.com/736x/9f/6a/cd/9f6acda227b8eba4d9ba231d411eb90e.jpg',
                             'https://www.shutterstock.com/image-photo/group-different-people-learn-how-600nw-2370239129.jpg',
                             'https://www.visitdubai.com/-/media/gathercontent/article/a/arts-and-crafts-experiences-in-dubai/media/artsandcraftsdubaijamjarjpg.jpg?rev=077adfa52dbe446bb97be5c4384be2f4&cx=0.5&cy=0.5&cw=1180&ch=590',
                             'https://www.stcc.edu/media/departments/stem-starter/coding-robotics-challenge-2.jpg',
@@ -208,23 +196,14 @@
                         this.showProduct = true;
                         this.cart = [];
                     },
-                    nextImage() {
-      this.currentIndex = (this.currentIndex + 1) % this.images.length;
-    },
-    prevImage() {
-      this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-    },
-    setImage(index) {
-      this.currentIndex = index;
-    },
-    startAutoSlide() {
-      this.autoSlideInterval = setInterval(() => {
-        this.nextImage();
-      }, 5000);
-    },
-    stopAutoSlide() {
-      clearInterval(this.autoSlideInterval);
-    },
+                    startAutoSlide() {
+                        this.autoSlideInterval = setInterval(() => {
+                        this.nextImage();
+                        }, 5000);
+                    },
+                    stopAutoSlide() {
+                        clearInterval(this.autoSlideInterval);
+                    },
                     goToProductsPage() {
                         this.isHomePage = false;
                         this.showProduct = true;
