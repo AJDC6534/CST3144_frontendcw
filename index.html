@@ -9,13 +9,13 @@
     </head>
     <body>
         <div id="app">
-            <header class="bg-gray-400 p-7 flex items-center justify-between text-white">
+            <header class="bg-gradient-to-t from-gray-300 via-gray-500 to-gray-700 px-7 flex items-center justify-between text-white">
                 <a href="#" @click.prevent="goToHomePage" class="flex items-center">
-                    <img :src="logoSrc" alt="logo" class="w-50 h-auto mr-4"></a><!-- Display the site name -->
+                    <img :src="logoSrc" alt="logo" class="w-64 h-auto mr-4 items-center"></a><!-- Display the site name -->
                 <button v-if="!isHomePage" v-on:click="showCheckout"
                     :class="[
-                    'text-white py-1 px-2 rounded-lg flex items-center hover:bg-gray-600 transition duration-300',
-                    cartItemCount === 0 ? 'bg-gray-600' : 'bg-red-500'
+                    'text-white py-1 px-2 rounded-lg flex items-center hover:bg-red-700 transition duration-300',
+                    cartItemCount === 0 ? 'bg-gray-500' : 'bg-red-500'
                     ]">
                     <span class="mr-2"> {{ cartItemCount }} </span>
                     <span class="fas fa-cart-plus">Checkout</span>
@@ -64,7 +64,7 @@
                             <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">Fully Booked</span>
                             <span v-else-if="product.spaces - cartCount(product.id) < 5" class="text-orange-500 font-bold mt-2"> 
                                 Only {{product.spaces - cartCount(product.id)}} left!</span>
-                            <span v-else class="text-blue-500 mt-2">Join Now</span>
+                            <span v-else class="text-black-500 mt-2">Join Now</span>
                         </div>
                     </div>
                 </div>
