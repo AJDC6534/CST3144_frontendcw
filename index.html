@@ -282,8 +282,14 @@
                         .then(response => response.json())
                         .then(data => {
                             alert('Order submitted successfully!');
+
                         this.updateSpaces(cartSummary);
                         this.cart = [];
+                        this.order = {
+                            firstName: '',
+                            lastName: '',
+                            contact: ''
+                        };
                         this.isHomePage = true;
                         })
                         .catch(error => console.error('Error submitting order:', error));
