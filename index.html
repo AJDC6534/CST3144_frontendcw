@@ -62,10 +62,8 @@
                             <button v-on:click="addToCart(product)" button v-if="canAddToCart(product)" class="w-full py-2 bg-red-500 text-white rounded-lg mt-3 hover:bg-gray-600 transition duration-300">Add to Cart</button>
                             <button disabled="disabled" v-else class="w-full py-2 bg-gray-400 text-white rounded-lg mt-3 cursor-not-allowed">Add to Cart</button>
                             <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">Fully Booked</span>
-                            <span v-else-if="product.spaces - cartCount(product.id) < 1" class="text-black-500 mt-2">Join Now</span>
-                            <span v-else-if="product.spaces - cartCount(product.id) < 5" class="text-orange-500 font-bold mt-2">
-                                Only {{ product.spaces - cartCount(product.id) }} left!
-                            </span>
+                            <span v-else-if="product.spaces - cartCount(product.id) < 5" class="text-orange-500 font-bold mt-2"> 
+                                Only {{product.spaces - cartCount(product.id)}} left!</span>
                             <span v-else class="text-black-500 mt-2">Join Now</span>
                         </div>
                     </div>
