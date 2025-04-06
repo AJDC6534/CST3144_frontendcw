@@ -58,7 +58,7 @@
                             </figure>
                             <p class="text-gray-600">Location: {{product.location}}</p>
                             <p class="font-semibold text-lg text-gray-900 mt-2">Price: {{product.price}}</p>
-                            <p class="text-gray-600 mt-2">Available: {{product.spaces - cartCount(product.id) }}</p>
+                            <p class="text-gray-600 mt-2">Available: {{product.spaces -cartCount(product.id) }}</p>
                             <button v-on:click="addToCart(product)" button v-if="canAddToCart(product)" class="w-full py-2 bg-red-500 text-white rounded-lg mt-3 hover:bg-gray-600 transition duration-300">Add to Cart</button>
                             <button disabled="disabled" v-else class="w-full py-2 bg-gray-400 text-white rounded-lg mt-3 cursor-not-allowed">Add to Cart</button>
                             <span v-if="product.spaces === cartCount(product.id)" class="text-red-500 font-bold mt-2">Fully Booked</span>
@@ -139,7 +139,7 @@
                     currentIndex: 0, // New property to track the current slide
                         images: [
                             'https://www.shutterstock.com/image-vector/simple-illustration-after-school-activities-600nw-2349418281.jpg',
-                            'https://i.pinimg.com/736x/9f/6a/cd/9f6acda227b8eba4d9ba231d411eb90e.jpg', // Example images, replace with actual URLs
+                            'https://theabingtonian.com/wp-content/uploads/2022/10/sport.jpg', 
                             'https://www.shutterstock.com/image-photo/group-different-people-learn-how-600nw-2370239129.jpg',
                             'https://www.visitdubai.com/-/media/gathercontent/article/a/arts-and-crafts-experiences-in-dubai/media/artsandcraftsdubaijamjarjpg.jpg?rev=077adfa52dbe446bb97be5c4384be2f4&cx=0.5&cy=0.5&cw=1180&ch=590',
                             'https://www.stcc.edu/media/departments/stem-starter/coding-robotics-challenge-2.jpg',
@@ -198,12 +198,6 @@
                         }
                     },
                     goToHomePage() {
-                        this.cart.forEach(item => {
-                        const product = this.products.find(product => product.id === item.id);
-                            if (product) {
-                                product.spaces++; // Restore the space for the product
-                            }
-                        });
                         this.isHomePage = true;
                         this.showProduct = true;
                         this.cart = [];
@@ -267,10 +261,10 @@
                                 _id: product._id,  
                                 id: product.id,
                                 title: product.title,
-                                price: product.price * 1,
+                                price: product.price,
                                 location: product.location,
                                 space: 1,
-                                AvailableSpaceRemaining: product.spaces - 1,
+                                spaces: product.spaces,
                             });
                         }
                         return acc;
@@ -288,7 +282,6 @@
                         .then(response => response.json())
                         .then(data => {
                             alert('Order submitted successfully!');
-
                         this.updateSpaces(cartSummary);
                         this.cart = [];
                         this.order = {
@@ -302,7 +295,7 @@
                     },
                     updateSpaces(cartSummary) {
                         cartSummary.forEach(product => {
-                            const updatedSpaces = product.spaces - product.space; // Deduct the correct number
+                            const updatedSpaces = product.spaces - product.space;
                             fetch(`https://cst3144backendcw.onrender.com/collection/lessons/${product._id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
