@@ -179,7 +179,7 @@
                         return product.spaces > this.cartCount(product.id);
                     },
                     cartCount(id) {
-                        return 0;
+                        return this.cart.filter(item => item.id === id).length;
                     },
                     removeFromCart(index) {
                         const item = this.cart[index];
@@ -195,7 +195,6 @@
                     addToCart(product) {
                         if (product.spaces > 0) { 
                             this.cart.push({ ...product }); // Add a copy of the product
-                            product.spaces--; // Reduce available spaces
                         }
                     },
                     goToHomePage() {
