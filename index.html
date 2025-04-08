@@ -72,18 +72,19 @@
                     <h1 class="text-2xl font-semibold mb-6">Checkout</h1>
                     <h2 class="text-xl font-semibold mt-6 mb-2">Cart Items</h2>
                     <div class="flex flex-wrap gap-6 justify-center">
-                        <div v-for="(item, index) in cart" :key="index" class="flex flex-col items-center w-50 bg-white p-4 rounded-lg shadow-lg">
+                        <div v-for="(item, index) in groupedCart" :key="index" class="flex flex-col items-center w-50 bg-white p-4 rounded-lg shadow-lg">
                             <img :src="item.image" alt="Product Image" class="w-32 h-32 rounded-lg shadow-md object-cover">
                             <div class="mt-2 text-center">
                                 <p class="font-semibold text-lg">{{ item.title }}</p>
                                 <p class="text-gray-600">{{ item.location }}</p>
-                                <p class="text-red-500 font-bold">AED {{ item.price * item.spaces }}</p>
-                                <button v-on:click="removeFromCart(index)" class="mt-2 bg-red-500 text-white py-1 px-4 rounded-md hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                                    Remove
+                                <p class="text-gray-800">Quantity: {{ item.quantity }}</p>
+                                <p class="text-red-500 font-bold">AED {{ item.totalPrice }}</p>
+                                <button v-on:click="removeOne(item.id)" class="mt-2 bg-red-500 text-white py-1 px-4 rounded-md hover:bg-red-600 focus:ring-2 focus:ring-red-500">
+                                    Remove One
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
                     <h2 class="text-xl font-semibold mt-6 mb-2">Enter your details</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 container mx-auto p-6 bg-white rounded-lg shadow-lg">
                         <div class="flex flex-col">
@@ -255,6 +256,7 @@
                         const existingProduct = acc.find(item => item.id === product.id);
                         if (existingProduct) {
                             existingProduct.space += 1; // Increase count for duplicate items
+                            existingProduct.price += product.price;
                         } else {
                             acc.push({
                                 _id: product._id,  
@@ -263,7 +265,6 @@
                                 price: product.price,
                                 location: product.location,
                                 space: 1,
-                                spaces: product.spaces,
                             });
                         }
                         return acc;
@@ -352,6 +353,22 @@
                         break;
                         }
                         return filtered;
+                    },
+                    groupedCart() {
+                    return this.cart.reduce((acc, product) => {
+                        const existing = acc.find(item => item.id === product.id);
+                        if (existing) {
+                            existing.quantity += 1;
+                            existing.totalPrice += product.price;
+                        } else {
+                            acc.push({
+                            ...product,
+                            quantity: 1,
+                            totalPrice: product.price
+                            });
+                        }
+                        return acc;
+                        }, []);
                     },
                 },
                 mounted() {
