@@ -248,48 +248,49 @@
                         if (!this.order.firstName.trim() || 
                             !this.order.lastName.trim() || 
                             !this.order.contact.trim()) {
-                                alert("Please fill out all required fields.");
-                        return;
+                            alert("Please fill out all required fields.");
+                            return;
                         }
-                        // Process cart to sum up spaces correctly
-                        const cartSummary = this.cart.reduce((acc, product) => {
-                        const existingProduct = acc.find(item => item.id === product.id);
-                        if (existingProduct) {
-                            existingProduct.space += 1; // Increase count for duplicate items
-                            existingProduct.price += product.price;
-                        } else {
-                            acc.push({
-                                _id: product._id,  
-                                id: product.id,
-                                title: product.title,
-                                price: product.price,
-                                location: product.location,
-                                space: 1,
-                            });
-                        }
-                        return acc;
+                        const cartSummaryWithSpaces = this.cart.reduce((acc, product) => {
+                            const existingProduct = acc.find(item => item.id === product.id);
+                            if (existingProduct) {
+                                existingProduct.space += 1;
+                                existingProduct.price += product.price;
+                            } else {
+                                acc.push({
+                                    _id: product._id,
+                                    id: product.id,
+                                    title: product.title,
+                                    price: product.price,
+                                    location: product.location,
+                                    space: 1,
+                                    spaces: product.spaces // keep for internal update
+                                });
+                            }
+                            return acc;
                         }, []);
+                        const cartSummaryForOrder = cartSummaryWithSpaces.map(({ spaces, ...item }) => item);
                         fetch('https://cst3144backendcw.onrender.com/collection/order', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
-                            firstName: this.order.firstName,
-                            lastName: this.order.lastName,
-                            contact: this.order.contact,
-                            cart: cartSummary // Use processed cart summary
+                                firstName: this.order.firstName,
+                                lastName: this.order.lastName,
+                                contact: this.order.contact,
+                                cart: cartSummaryForOrder
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
                             alert('Order submitted successfully!');
-                        this.updateSpaces(cartSummary);
-                        this.cart = [];
-                        this.order = {
-                            firstName: '',
-                            lastName: '',
-                            contact: ''
-                        };
-                        this.isHomePage = true;
+                            this.updateSpaces(cartSummaryWithSpaces);
+                            this.cart = [];
+                            this.order = {
+                                firstName: '',
+                                lastName: '',
+                                contact: ''
+                            };
+                            this.isHomePage = true;
                         })
                         .catch(error => console.error('Error submitting order:', error));
                     },
