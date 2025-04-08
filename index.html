@@ -80,8 +80,8 @@
                                 <p class="text-gray-800">Quantity: {{ item.quantity }}</p>
                                 <p class="text-red-500 font-bold">AED {{ item.totalPrice }}</p>
                                 <button v-on:click="removeOne(item.id)" class="mt-2 bg-red-500 text-white py-1 px-4 rounded-md hover:bg-red-600 focus:ring-2 focus:ring-red-500">
-                                    Remove One
-                                </button>
+                                    Remove
+                                </button>                                
                             </div>
                         </div>
                     </div>                    
@@ -181,17 +181,23 @@
                     cartCount(id) {
                         return this.cart.filter(item => item.id === id).length;
                     },
-                    removeFromCart(index) {
-                        const item = this.cart[index];
-                        this.cart.splice(index, 1);
-                        const product = this.products.find(product => product.id === item.id);
-                        if (product) {
-                            product.spaces++; // Restore space when an item is removed
-                        }
-                        if (this.cart.length === 0) {
-                            this.showProduct = true;
-                        }
-                    },          
+                    removeOne(productId) {
+    const index = this.cart.findIndex(item => item.id === productId);
+    if (index !== -1) {
+        const removedItem = this.cart.splice(index, 1)[0];
+
+        // Restore available space
+        const product = this.products.find(p => p.id === removedItem.id);
+        if (product) {
+            product.spaces++;
+        }
+
+        // Show product list if cart becomes empty
+        if (this.cart.length === 0) {
+            this.showProduct = true;
+        }
+    }
+},     
                     addToCart(product) {
                         if (product.spaces > 0) { 
                             this.cart.push({ ...product }); // Add a copy of the product
