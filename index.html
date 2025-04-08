@@ -178,9 +178,6 @@
                     canAddToCart(product) {
                         return product.spaces > this.cartCount(product.id);
                     },
-                    cartCount(id) {
-                        return this.cart.filter(item => item.id === id).length;
-                    },
                     removeOne(productId) {
                         const index = this.cart.findIndex(item => item.id === productId);
                         if (index !== -1) {
