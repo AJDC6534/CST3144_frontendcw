@@ -13,6 +13,6 @@ FRONTEND GITHUB - https://github.com/AJDC6534/CST3144_frontendcw
 
 BACKEND GITHUB - https://github.com/AJDC6534/CST3144_backendcw
 
-RENDER - https://cst3144backendcw.onrender.com
+RENDER - https://cst3144backendcw.onrender.com/collection/lessons
 
 GITHUB-PAGES WEB DEPLOYMENT - https://ajdc6534.github.io/CST3144_frontendcw/
