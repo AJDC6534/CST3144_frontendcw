@@ -186,9 +186,6 @@
                         if (index !== -1) {
                             const removedItem = this.cart.splice(index, 1)[0];
                             const product = this.products.find(p => p.id === removedItem.id);
-                            if (product) {
-                                product.spaces++;
-                            }
                             if (this.cart.length === 0) {
                                 this.showProduct = true;
                             }
